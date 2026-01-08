@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { useChat } from "@/hooks/useChat"
+import { API_URL } from "@/lib/constant"
 
 export function NewChatDialog() {
   const [open, setOpen] = useState(false)
@@ -86,7 +87,7 @@ export function NewChatDialog() {
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                     {user.photoProfile ? (
                       <img
-                        src={user.photoProfile}
+                        src={`${API_URL}/${user.photoProfile}`}
                         alt={user.username}
                         className="w-full h-full object-cover"
                       />
