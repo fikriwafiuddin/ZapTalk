@@ -13,11 +13,13 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { useChat } from "@/hooks/useChat"
 import { API_URL } from "@/lib/constant"
+import { useAuth } from "@/hooks/useAuth"
 
 export function NewChatDialog() {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
   const [, setSearchParams] = useSearchParams()
+  const { user: me } = useAuth()
 
   const { useSearchUsers, createConversation } = useChat()
   const { data: users, isLoading } = useSearchUsers(search)
@@ -76,35 +78,38 @@ export function NewChatDialog() {
                   : "No users found."}
               </p>
             ) : (
-              users.map((user) => (
-                <button
-                  key={user._id}
-                  onClick={() => handleStartChat(user._id)}
-                  className={cn(
-                    "flex items-center gap-3 w-full p-2 rounded-lg hover:bg-muted/50 transition-colors text-left"
-                  )}
-                >
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                    {user.photoProfile ? (
-                      <img
-                        src={`${API_URL}/${user.photoProfile}`}
-                        alt={user.username}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-xs font-semibold text-primary">
-                        {getInitials(user.username)}
-                      </span>
-                    )}
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm">{user.username}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {user.email}
-                    </p>
-                  </div>
-                </button>
-              ))
+              users.map(
+                (user) =>
+                  user._id !== me?._id && (
+                    <button
+                      key={user._id}
+                      onClick={() => handleStartChat(user._id)}
+                      className={cn(
+                        "flex items-center gap-3 w-full p-2 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                      )}
+                    >
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                        {user.photoProfile ? (
+                          <img
+                            src={`${API_URL}/${user.photoProfile}`}
+                            alt={user.username}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-xs font-semibold text-primary">
+                            {getInitials(user.username)}
+                          </span>
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">{user.username}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {user.email}
+                        </p>
+                      </div>
+                    </button>
+                  )
+              )
             )}
           </div>
         </div>
