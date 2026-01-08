@@ -9,6 +9,7 @@ import {
 import { io, Socket } from "socket.io-client"
 import { useAuth } from "@/hooks/useAuth"
 import { toast } from "sonner"
+import { API_URL } from "@/lib/constant"
 
 interface SocketContextType {
   socket: Socket | null
@@ -54,7 +55,7 @@ export const SocketContextProvider = ({
 
   useEffect(() => {
     if (user) {
-      const newSocket = io("http://localhost:5000", {
+      const newSocket = io(API_URL, {
         query: {
           userId: user._id,
         },
