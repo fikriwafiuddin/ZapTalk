@@ -28,6 +28,9 @@ interface SocketContextType {
   onMessagesRead: (
     callback: (data: { conversationId: string; readBy: string }) => void
   ) => (() => void) | undefined
+  onConversationUpdate: (
+    callback: (conversation: any) => void
+  ) => (() => void) | undefined
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined)
@@ -155,6 +158,18 @@ export const SocketContextProvider = ({
     [socket]
   )
 
+  const onConversationUpdate = useCallback(
+    (callback: (conversation: any) => void) => {
+      if (socket) {
+        socket.on("conversationUpdate", callback)
+        return () => {
+          socket.off("conversationUpdate", callback)
+        }
+      }
+    },
+    [socket]
+  )
+
   const onMessagesRead = useCallback(
     (callback: (data: { conversationId: string; readBy: string }) => void) => {
       if (socket) {
@@ -178,6 +193,7 @@ export const SocketContextProvider = ({
         leaveConversation,
         onMessagesDelivered,
         onMessagesRead,
+        onConversationUpdate,
       }}
     >
       {children}

@@ -86,6 +86,19 @@ class MessageService {
           conversationId: updatedConversation._id,
           unreadCount: updatedConversation.unreadCount,
         })
+
+        // Also emit fully populated conversation to ensure sidebar updates for new chats
+        const populatedConversation = await updatedConversation.populate([
+          { path: "participants", select: "username email photoProfile" },
+          {
+            path: "lastMessage",
+            populate: { path: "sender", select: "username email photoProfile" },
+          },
+        ])
+        io.to(receiverSocketId).emit(
+          "conversationUpdate",
+          populatedConversation
+        )
       }
     }
 

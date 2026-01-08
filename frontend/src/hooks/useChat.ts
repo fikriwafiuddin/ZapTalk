@@ -42,6 +42,7 @@ export function useChat() {
     leaveConversation,
     onMessagesDelivered,
     onMessagesRead,
+    onConversationUpdate,
   } = useSocket()
   const {
     data: conversations,
@@ -152,6 +153,32 @@ export function useChat() {
       cleanupRead?.()
     }
   }, [onMessagesDelivered, onMessagesRead, queryClient])
+
+  // Handle real-time conversation updates (e.g., new chat received)
+  useEffect(() => {
+    const handleConversationUpdate = (conversation: Conversation) => {
+      queryClient.setQueryData<Conversation[]>(["conversations"], (old) => {
+        if (!old) return [conversation]
+        const exists = old.find((c) => c._id === conversation._id)
+        if (exists) {
+          return old
+            .map((c) => (c._id === conversation._id ? conversation : c))
+            .sort(
+              (a, b) =>
+                new Date(b.updatedAt).getTime() -
+                new Date(a.updatedAt).getTime()
+            )
+        }
+        return [conversation, ...old].sort(
+          (a, b) =>
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        )
+      })
+    }
+
+    const cleanup = onConversationUpdate(handleConversationUpdate)
+    return () => cleanup?.()
+  }, [onConversationUpdate, queryClient])
 
   // Listen for real-time messages and unread updates
   useEffect(() => {
