@@ -6,12 +6,14 @@ import { SocketContextProvider } from "./components/providers/SocketContext"
 import ProtectedRoute from "./components/auth/ProtectedRoute"
 import PublicRoute from "./components/auth/PublicRoute"
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
+import { Toaster } from "@/components/ui/sonner"
 
 function App() {
   return (
     <QueryProvider>
       <BrowserRouter>
         <SocketContextProvider>
+          <Toaster position="top-right" richColors />
           <Routes>
             <Route
               path="/login"

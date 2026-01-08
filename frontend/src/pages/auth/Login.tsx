@@ -83,12 +83,12 @@ export default function Login() {
                   <FormItem>
                     <div className="flex items-center justify-between">
                       <FormLabel>Password</FormLabel>
-                      <Link
+                      {/* <Link
                         to="#"
                         className="text-sm text-primary underline-offset-4 hover:underline"
                       >
                         Forgot password?
-                      </Link>
+                      </Link> */}
                     </div>
                     <FormControl>
                       <Input type="password" {...field} />

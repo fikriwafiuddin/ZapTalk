@@ -18,7 +18,14 @@ class ConversationRepository {
       participants: { $in: [userId] },
     })
       .populate("participants", "username email photoProfile")
-      .populate("lastMessage")
+      .populate({
+        path: "lastMessage",
+        select: "content sender isRead isDelivered createdAt",
+        populate: {
+          path: "sender",
+          select: "username email photoProfile",
+        },
+      })
       .sort({ updatedAt: -1 })
   }
 }

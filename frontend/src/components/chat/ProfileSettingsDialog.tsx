@@ -23,7 +23,8 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { profileSchema, type ProfileValues } from "@/lib/validations/auth"
-
+import { useAuth } from "@/hooks/useAuth"
+import { API_URL } from "@/lib/constant"
 
 export function ProfileSettingsDialog({
   children,
@@ -31,13 +32,12 @@ export function ProfileSettingsDialog({
   children?: React.ReactNode
 }) {
   const [open, setOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { user, updateProfile } = useAuth()
 
-  // TODO: Get actual user data from auth context/store
   const defaultValues: ProfileValues = {
-    username: "Current User", // Mock data
+    username: user?.username || "",
   }
 
   const form = useForm<ProfileValues>({
@@ -57,22 +57,23 @@ export function ProfileSettingsDialog({
   }
 
   async function onSubmit(data: ProfileValues) {
-    setIsLoading(true)
     try {
-      // TODO: Implement API call
-      console.log("Updating profile:", data)
-      console.log("New avatar:", fileInputRef.current?.files?.[0])
-      
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      
+      const formData = new FormData()
+      formData.append("username", data.username)
+
+      const file = fileInputRef.current?.files?.[0]
+      if (file) {
+        formData.append("image", file)
+      }
+
+      await updateProfile.mutateAsync(formData)
       setOpen(false)
     } catch (error) {
       console.error(error)
-    } finally {
-      setIsLoading(false)
     }
   }
+
+  const isLoading = updateProfile.isPending
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -93,12 +94,21 @@ export function ProfileSettingsDialog({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="flex flex-col items-center gap-4">
-              <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+              <div
+                className="relative group cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <div className="h-24 w-24 rounded-full overflow-hidden border-2 border-muted bg-muted flex items-center justify-center">
                   {avatarPreview ? (
                     <img
                       src={avatarPreview}
                       alt="Avatar preview"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : user?.photoProfile ? (
+                    <img
+                      src={`${API_URL}/${user.photoProfile}`}
+                      alt={user.username}
                       className="h-full w-full object-cover"
                     />
                   ) : (

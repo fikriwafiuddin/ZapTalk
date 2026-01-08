@@ -71,6 +71,20 @@ export function useAuth() {
     },
   })
 
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: FormData) => {
+      const res = await api.patch<AuthResponse>("/auth/editProfile", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      return res.data.data.user
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["authUser"], updatedUser)
+    },
+  })
+
   return {
     user,
     isLoading,
@@ -78,5 +92,6 @@ export function useAuth() {
     login: loginMutation,
     register: registerMutation,
     logout: logoutMutation,
+    updateProfile: updateProfileMutation,
   }
 }

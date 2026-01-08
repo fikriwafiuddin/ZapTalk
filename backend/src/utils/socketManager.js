@@ -1,4 +1,5 @@
 import { Server } from "socket.io"
+import messageService from "../services/messageService.js"
 
 let io = null
 const onlineUsers = new Map()
@@ -18,7 +19,20 @@ export const initializeSocket = (server) => {
     if (userId) {
       onlineUsers.set(userId, socket.id)
       io.emit("getOnlineUsers", Array.from(onlineUsers.keys()))
+
+      // Mark messages as delivered when user comes online
+      messageService.markMessagesAsDelivered(userId)
     }
+
+    socket.on("joinConversation", (conversationId) => {
+      socket.join(conversationId)
+      console.log(`User ${userId} joined room: ${conversationId}`)
+    })
+
+    socket.on("leaveConversation", (conversationId) => {
+      socket.leave(conversationId)
+      console.log(`User ${userId} left room: ${conversationId}`)
+    })
 
     socket.on("disconnect", () => {
       console.log("A user disconnected:", socket.id)

@@ -1,13 +1,12 @@
 import { useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-// import { conversations, messages } from "@/lib/mock-data"
-import { Send, Phone, Video, MoreVertical, ArrowLeft } from "lucide-react"
+import { Send, ArrowLeft, Check, CheckCheck } from "lucide-react"
 import { useChat } from "@/hooks/useChat"
 import { useAuth } from "@/hooks/useAuth"
 import { useEffect, useRef } from "react"
 import { useSocket } from "@/components/providers/SocketContext"
-// import { cn } from "@/lib/utils"
+import { API_URL } from "@/lib/constant"
 
 export function ChatArea() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -70,7 +69,7 @@ export function ChatArea() {
           </Button>
           {otherUser?.photoProfile ? (
             <img
-              src={otherUser.photoProfile}
+              src={`${API_URL}/${otherUser.photoProfile}`}
               alt={otherUser.username}
               className="w-8 h-8 rounded-full object-cover"
             />
@@ -95,7 +94,7 @@ export function ChatArea() {
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon">
+          {/* <Button variant="ghost" size="icon">
             <Phone className="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="icon">
@@ -103,7 +102,7 @@ export function ChatArea() {
           </Button>
           <Button variant="ghost" size="icon">
             <MoreVertical className="h-4 w-4" />
-          </Button>
+          </Button> */}
         </div>
       </div>
 
@@ -134,9 +133,9 @@ export function ChatArea() {
                 >
                   {message.content}
                   <div
-                    className={`text-[10px] mt-1 ${
+                    className={`text-[10px] mt-1 flex items-center gap-1 ${
                       isMe
-                        ? "text-primary-foreground/70"
+                        ? "text-primary-foreground/70 justify-end"
                         : "text-muted-foreground"
                     }`}
                   >
@@ -144,6 +143,17 @@ export function ChatArea() {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
+                    {isMe && (
+                      <span className="flex items-center">
+                        {message.isRead ? (
+                          <CheckCheck className="h-3 w-3 text-sky-400" />
+                        ) : message.isDelivered ? (
+                          <CheckCheck className="h-3 w-3" />
+                        ) : (
+                          <Check className="h-3 w-3" />
+                        )}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

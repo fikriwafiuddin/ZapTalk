@@ -1,16 +1,18 @@
 import { useSearchParams } from "react-router-dom"
+import { Check, CheckCheck, LogOut } from "lucide-react"
 import { Input } from "@/components/ui/input"
-// import { conversations } from "@/lib/mock-data"
 import { NewChatDialog } from "@/components/chat/NewChatDialog"
 import { ProfileSettingsDialog } from "@/components/chat/ProfileSettingsDialog"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/useAuth"
 import { useChat } from "@/hooks/useChat"
+import { API_URL } from "@/lib/constant"
+import { Button } from "@/components/ui/button"
 
 export function ChatSidebar() {
   const [searchParams, setSearchParams] = useSearchParams()
   const selectedId = searchParams.get("id")
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
   const { conversations, isLoading } = useChat()
 
   // Helper to get initials
@@ -43,7 +45,7 @@ export function ChatSidebar() {
               <button className="relative h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center hover:opacity-80 transition-opacity overflow-hidden">
                 {user?.photoProfile ? (
                   <img
-                    src={user.photoProfile}
+                    src={`${API_URL}/${user.photoProfile}`}
                     alt={user.username}
                     className="h-full w-full object-cover"
                   />
@@ -65,7 +67,18 @@ export function ChatSidebar() {
               <span className="text-xs text-muted-foreground">Online</span>
             </div>
           </div>
-          <NewChatDialog />
+          <div className="flex items-center gap-1">
+            <NewChatDialog />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => logout.mutate()}
+              disabled={logout.isPending}
+            >
+              <LogOut className="h-5 w-5" />
+              <span className="sr-only">Logout</span>
+            </Button>
+          </div>
         </div>
         <Input placeholder="Search messages..." className="bg-background" />
       </div>
@@ -98,7 +111,7 @@ export function ChatSidebar() {
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                       {otherUser.photoProfile ? (
                         <img
-                          src={otherUser.photoProfile}
+                          src={`${API_URL}/${otherUser.photoProfile}`}
                           alt={otherUser.username}
                           className="w-full h-full object-cover"
                         />
@@ -121,11 +134,25 @@ export function ChatSidebar() {
                       )}
                     </div>
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm text-muted-foreground truncate">
-                        {chat.lastMessage
-                          ? chat.lastMessage.content
-                          : "Start a conversation"}
-                      </p>
+                      <div className="flex items-center gap-1 overflow-hidden">
+                        {chat.lastMessage &&
+                          chat.lastMessage.sender?._id === user?._id && (
+                            <span className="flex-shrink-0">
+                              {chat.lastMessage.isRead ? (
+                                <CheckCheck className="h-3 w-3 text-sky-400" />
+                              ) : chat.lastMessage.isDelivered ? (
+                                <CheckCheck className="h-3 w-3 text-muted-foreground" />
+                              ) : (
+                                <Check className="h-3 w-3 text-muted-foreground" />
+                              )}
+                            </span>
+                          )}
+                        <p className="text-sm text-muted-foreground truncate">
+                          {chat.lastMessage
+                            ? chat.lastMessage.content
+                            : "Start a conversation"}
+                        </p>
+                      </div>
                       {user && chat?.unreadCount[user?._id] > 0 && (
                         <span className="ml-1 flex h-4 sm:h-5 min-w-[1rem] sm:min-w-[1.25rem] items-center justify-center rounded-full bg-primary px-1 sm:px-1.5 text-[10px] sm:text-xs font-medium text-primary-foreground flex-shrink-0">
                           {chat.unreadCount[user?._id]}

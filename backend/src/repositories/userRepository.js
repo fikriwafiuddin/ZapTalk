@@ -25,6 +25,16 @@ class UserRepository {
       .select("username email photoProfile")
       .limit(10)
   }
+
+  async updateUser(id, updateData) {
+    return await User.findByIdAndUpdate(id, updateData, { new: true }).select(
+      "-password"
+    )
+  }
+
+  async findByIdFull(id) {
+    return await User.findById(id)
+  }
 }
 
 export default new UserRepository()

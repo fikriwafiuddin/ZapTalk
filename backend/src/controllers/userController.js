@@ -1,41 +1,25 @@
-import User from "../models/userModel.js"
-import fs from "fs"
-import path from "path"
-import { fileURLToPath } from "url"
 import userService from "../services/userService.js"
 import { SuccessResponse } from "../utils/response.js"
 
-export const editProfile = async (req, res) => {
+export const editProfile = async (req, res, next) => {
   const id = req.id
   const image = req.file
   const { username, deletePhotoProfile } = req.body
+
   try {
-    const user = await User.findById(id)
-    if (!user) return res.status(404).json({ message: "User not found" })
+    const editedUser = await userService.updateProfile(id, {
+      username,
+      image,
+      deletePhotoProfile,
+    })
 
-    if (username == "")
-      return res.status(400).json({ message: "Username is required" })
-    user.username = username
-
-    if (user.photoProfile && deletePhotoProfile === "true") {
-      const __filename = fileURLToPath(import.meta.url)
-      const __dirname = path.dirname(__filename)
-      const imagePath = path.join(__dirname, "../../images", user.photoProfile)
-      fs.unlinkSync(imagePath)
-      user.photoProfile = null
-    }
-
-    if (image) {
-      user.photoProfile = image.filename
-    }
-
-    const editedUser = await user.save()
-    return res
-      .status(200)
-      .json({ message: "Profile edited successfully", user: editedUser })
+    return res.status(200).json(
+      new SuccessResponse("Profile edited successfully", {
+        user: editedUser,
+      })
+    )
   } catch (error) {
-    console.log("Error in editProfile function", new Date(), error)
-    return res.status(500).json({ message: "Internal Server Error" })
+    next(error)
   }
 }
 
