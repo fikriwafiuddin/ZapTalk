@@ -107,7 +107,7 @@ export function ProfileSettingsDialog({
                     />
                   ) : user?.photoProfile ? (
                     <img
-                      src={`${API_URL}/${user.photoProfile}`}
+                      src={`${API_URL}/images/${user.photoProfile}`}
                       alt={user.username}
                       className="h-full w-full object-cover"
                     />

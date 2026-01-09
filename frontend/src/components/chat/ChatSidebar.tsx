@@ -45,7 +45,7 @@ export function ChatSidebar() {
               <button className="relative h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center hover:opacity-80 transition-opacity overflow-hidden">
                 {user?.photoProfile ? (
                   <img
-                    src={`${API_URL}/${user.photoProfile}`}
+                    src={`${API_URL}/images/${user.photoProfile}`}
                     alt={user.username}
                     className="h-full w-full object-cover"
                   />
@@ -111,7 +111,7 @@ export function ChatSidebar() {
                     <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                       {otherUser.photoProfile ? (
                         <img
-                          src={`${API_URL}/${otherUser.photoProfile}`}
+                          src={`${API_URL}/images/${otherUser.photoProfile}`}
                           alt={otherUser.username}
                           className="w-full h-full object-cover"
                         />

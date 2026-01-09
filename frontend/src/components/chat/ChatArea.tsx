@@ -69,7 +69,7 @@ export function ChatArea() {
           </Button>
           {otherUser?.photoProfile ? (
             <img
-              src={`${API_URL}/${otherUser.photoProfile}`}
+              src={`${API_URL}/images/${otherUser.photoProfile}`}
               alt={otherUser.username}
               className="w-8 h-8 rounded-full object-cover"
             />

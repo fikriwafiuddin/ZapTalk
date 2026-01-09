@@ -91,7 +91,7 @@ export function NewChatDialog() {
                       <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                         {user.photoProfile ? (
                           <img
-                            src={`${API_URL}/${user.photoProfile}`}
+                            src={`${API_URL}/images/${user.photoProfile}`}
                             alt={user.username}
                             className="w-full h-full object-cover"
                           />
